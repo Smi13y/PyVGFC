@@ -3,7 +3,7 @@ import random
 class Hero:
 
     #constructor for hero
-    def __init__(self, name, style, lvl, xp, win, draw, loss, strength, accuracy, speed, body, heart, soul):
+    def __init__(self, name, style, lvl, xp, win, draw, loss, strength, accuracy, speed, body, heart, soul, grappled, controlGrapple):
         self.name = name
         self.style = style
 
@@ -78,6 +78,7 @@ class Hero:
             modBody = 0
             modHeart = 0
             modSoul = 0
+            blockDodge = 5
 
         self.level = lvl
         self.experience = xp
@@ -98,6 +99,9 @@ class Hero:
         self.tempStamina = self.stamina
         self.mana = 3 * (10 + int(self.heart) + int(self.soul))
         self.tempMana = self.mana
+        self.blockDodge = blockDodge
+        self.grappled = grappled
+        self.controlGrapple = controlGrapple
 
     #to string for hero
     def __str__(self):
@@ -115,7 +119,11 @@ class Commands:
     def roll(int):
         return random.randint(1, int)
 
-    #command used for printing
+    #command used for generating a number between roll & int
+    def roll0(int):
+        return random.randint(0, int)
+
+    #command used for printing matchUp
     def printMatchUp(player1, player2):
         print('====================================')
         print(player1)
@@ -148,44 +156,47 @@ class Commands:
         else:
             return False
 
+#command to determine if an attack lands and whether or not it is a critical hit
     def attackHit(player1, player2):
         roll1 = Commands.roll(20)
         roll2 = Commands.roll(20)
-
+        print(player1.name, 'goes for the attack!')
         blockDodge = Commands.blockDodge(player2)
         crit = Commands.isCrit(roll1)
         if blockDodge == 'Block':
             if (player1.strength + player1.accuracy + roll1) >= (player2.body + player2.heart + roll2) and crit:
-                print(player2.name, ' tries to block.')
+                print(player2.name, 'tries to block.')
                 print('It fails!', player1.name, 'lands critical blow!')
                 return 2
             elif (player1.strength + player1.accuracy + roll1) >= (player2.body + player2.heart + roll2) and not crit:
-                print(player2.name, ' tries to block.')
+                print(player2.name, 'tries to block.')
                 print('It fails!', player1.name, 'lands a strike!')
                 return 1
             else:
+                print(player2.name, 'tries to block')
                 print(player2.name, 'is able to block it')
                 return 0
         else:
             if (player1.strength + player1.accuracy + roll1) >= (player2.speed + player2.soul + roll2) and crit:
-                print(player2.name, ' tries to dodge.')
+                print(player2.name, 'tries to dodge.')
                 print('It fails!', player1.name, 'lands a critical blow!')
                 return 2
             elif (player1.strength + player1.accuracy + roll1) >= (player2.speed + player2.soul + roll2) and not crit:
-                print(player2.name, ' tries to dodge.')
+                print(player2.name, 'tries to dodge.')
                 print('It fails!', player1.name, 'lands a strike!')
                 return 1
             else:
-                print(player2.name, 'is dodges out of the way!')
+                print(player2.name, 'dodges out of the way!')
                 return 0
 
 
-    #command used to determine the attack type of the attacker based on fight style
+#command used to determine the attack type of the attacker based on fight style
 #main to essentially test
-x = Hero('Jeff', 'Grappler', 1, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3)
-y = Hero('Steve', 'Rogue', 1, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3)
+x = Hero('Jeff', 'Grappler', 1, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, False, False)
+y = Hero('Steve', 'Rogue', 1, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, False, False)
 x.tempHealth = 1
 print(x.tempHealth)
 Commands.matchBegin(x, y)
 print(x.tempHealth, 'test')
+Commands.attackHit(x, y)
 
